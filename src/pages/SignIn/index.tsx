@@ -5,6 +5,7 @@ import {
     View,
     ScrollView,
     Platform,
+    TextInput
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -24,8 +25,9 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 const SignIn: React.FC = () => {
-    const navigation = useNavigation();
     const formRef = useRef<FormHandles>(null);
+    const passwordInputRef = useRef<TextInput>(null);
+    const navigation = useNavigation();
     const handleSubmit = useCallback((data: object) => {
         console.log(data);
     }, []);
@@ -51,11 +53,29 @@ const SignIn: React.FC = () => {
                                 name="email"
                                 icon="mail"
                                 placeholder="E-mail"
+                                autoCorrect={false}
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                                returnKeyType="next"
+                                blurOnSubmit={false}
+                                onSubmitEditing={
+                                    ()=>{
+                                        passwordInputRef?.current?.focus();
+                                    }
+                                }
                             />
                             <Input
+                                ref={passwordInputRef}
                                 name="password"
                                 icon="lock"
                                 placeholder="Senha"
+                                secureTextEntry
+                                returnKeyType="send"
+                                onSubmitEditing={
+                                    () => {
+                                        formRef.current?.submitForm();
+                                    }
+                                }
                             />
                             <Button
                                 onPress={() => {
@@ -93,3 +113,4 @@ const SignIn: React.FC = () => {
     );
 };
 export default SignIn;
+
