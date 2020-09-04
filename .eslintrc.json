@@ -37,7 +37,7 @@
         "react/jsx-indent-props": "off",
         "react/jsx-props-no-spreading": "off",
         "no-unused-expressions": "off",
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
         "import/extensions": [
             "error",
             "ignorePackages",
