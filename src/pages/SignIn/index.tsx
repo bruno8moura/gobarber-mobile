@@ -5,12 +5,14 @@ import {
     View,
     ScrollView,
     Platform,
-    TextInput
+    TextInput,
+    Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 import logoImg from '../../assets/logo.png';
 
 import {
@@ -23,14 +25,61 @@ import {
 } from './styles';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import getValidationErrors from '../../util/getValidationErrors';
+
+interface SignInFormData {
+    email: string;
+    password: string;
+}
 
 const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const passwordInputRef = useRef<TextInput>(null);
     const navigation = useNavigation();
-    const handleSubmit = useCallback((data: object) => {
-        console.log(data);
-    }, []);
+    const handleSubmit = useCallback(
+        async ({ email, password }: SignInFormData) => {
+            try {
+                formRef.current?.setErrors({});
+
+                const schema = Yup.object().shape({
+                    email: Yup.string()
+                        .required('E-mail obrigatório')
+                        .email('Digite um email válido'),
+                    password: Yup.string().required('Senha obrigatória'),
+                });
+
+                await schema.validate(
+                    { email, password },
+                    {
+                        abortEarly: false,
+                    },
+                );
+                /* await signIn({
+                    email,
+                    password,
+                }); */
+
+                // history.push('/');
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const errors = getValidationErrors(err);
+                    formRef.current?.setErrors(errors);
+                }
+
+                Alert.alert(
+                    'Erro na autenticalção',
+                    'Ocorreu um erro ao fazer login, cheque as credenciais',
+                );
+                /* addToast({
+                    type: 'error',
+                    title: 'Erro na autenticação',
+                    description:
+                        'Ocorreu um erro ao fazer login, cheque as credenciais.',
+                }); */
+            }
+        },
+        [],
+    );
     return (
         <>
             <KeyboardAvoidingView
@@ -58,11 +107,9 @@ const SignIn: React.FC = () => {
                                 keyboardType="email-address"
                                 returnKeyType="next"
                                 blurOnSubmit={false}
-                                onSubmitEditing={
-                                    ()=>{
-                                        passwordInputRef?.current?.focus();
-                                    }
-                                }
+                                onSubmitEditing={() => {
+                                    passwordInputRef?.current?.focus();
+                                }}
                             />
                             <Input
                                 ref={passwordInputRef}
@@ -71,11 +118,9 @@ const SignIn: React.FC = () => {
                                 placeholder="Senha"
                                 secureTextEntry
                                 returnKeyType="send"
-                                onSubmitEditing={
-                                    () => {
-                                        formRef.current?.submitForm();
-                                    }
-                                }
+                                onSubmitEditing={() => {
+                                    formRef.current?.submitForm();
+                                }}
                             />
                             <Button
                                 onPress={() => {
@@ -113,4 +158,3 @@ const SignIn: React.FC = () => {
     );
 };
 export default SignIn;
-
