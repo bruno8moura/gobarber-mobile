@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
     createContext,
     useCallback,
@@ -27,6 +28,7 @@ interface AuthContextData {
     user: User;
     signIn(credentials: SigningCredentials): Promise<void>;
     signOut(): void;
+    loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -35,17 +37,20 @@ export const AuthProvider: React.FC = ({ children }) => {
     const storageTokenKey = '@GoBarber:token';
     const storageUserKey = '@GoBarber:user';
     const [data, setData] = useState<AuthState>({} as AuthState);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadStorageData(): Promise<void> {
-            const [[token], [user]] = await AsyncStorage.multiGet([
-                storageTokenKey,
-                storageUserKey,
-            ]);
+            const [
+                [keyToken, token],
+                [keyUser, user],
+            ] = await AsyncStorage.multiGet([storageTokenKey, storageUserKey]);
 
             if (token && user) {
                 setData({ token, user: JSON.parse(user) });
             }
+
+            setLoading(false);
         }
 
         loadStorageData();
@@ -73,7 +78,9 @@ export const AuthProvider: React.FC = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+        <AuthContext.Provider
+            value={{ user: data.user, signIn, signOut, loading }}
+        >
             {children}
         </AuthContext.Provider>
     );

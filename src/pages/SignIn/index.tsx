@@ -14,7 +14,7 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import logoImg from '../../assets/logo.png';
-import { useAuth } from '../../hooks/Auth';
+import { useAuth } from '../../hooks/auth';
 
 import {
     Container,
