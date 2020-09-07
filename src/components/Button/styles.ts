@@ -1,6 +1,10 @@
 import styled from 'styled-components/native';
 import { RectButton } from 'react-native-gesture-handler';
 
+interface ButtonTextProps {
+    color?: string;
+}
+
 export const Container = styled(RectButton)`
     height: 60px;
     background: #ff9000;
@@ -10,8 +14,8 @@ export const Container = styled(RectButton)`
     justify-content: center;
 `;
 
-export const ButtonText = styled.Text`
+export const ButtonText = styled.Text<ButtonTextProps>`
     font-family: 'RobotoSlab-Medium';
-    color: #312e38;
+    color: ${props => (props.color ? props.color : '#312e38')};
     font-size: 18px;
 `;
